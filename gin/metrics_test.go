@@ -1,0 +1,141 @@
+package gin
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"io"
+	"math/rand"
+	"net/http"
+	"net/http/httptest"
+	"reflect"
+	"testing"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	metrics "github.com/velonetics/velonetics-metrics/v2"
+	"github.com/velonetics/lura/v2/config"
+	"github.com/velonetics/lura/v2/logging"
+	"github.com/velonetics/lura/v2/proxy"
+	veloneticsgin "github.com/velonetics/lura/v2/router/gin"
+)
+
+func TestDisabledRouterMetrics(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	buf := bytes.NewBuffer(make([]byte, 1024))
+	l, _ := logging.NewLogger("DEBUG", buf, "")
+	cfg := map[string]interface{}{metrics.Namespace: map[string]interface{}{"router_disabled": true}}
+	metric := New(ctx, cfg, l)
+	hf := metric.NewHTTPHandlerFactory(veloneticsgin.EndpointHandler)
+	if reflect.ValueOf(hf).Pointer() != reflect.ValueOf(veloneticsgin.EndpointHandler).Pointer() {
+		t.Error("The endpoint handler should be the default since the Router metrics are disabled.")
+	}
+}
+
+func TestNew(t *testing.T) {
+	// we do not need a lot of entropy for the test, so we comment
+	// the line to skip the warning
+	rand.Seed(time.Now().Unix()) // skipcq: GO-S1033
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	buf := bytes.NewBuffer(make([]byte, 1024))
+	l, _ := logging.NewLogger("DEBUG", buf, "")
+	defaultCfg := map[string]interface{}{metrics.Namespace: map[string]interface{}{"collection_time": "1s"}}
+	metric := New(ctx, defaultCfg, l)
+
+	engine := gin.New()
+
+	response := proxy.Response{Data: map[string]interface{}{}, IsComplete: true}
+	dMax := 1000
+	dMin := 1
+	p := func(_ context.Context, _ *proxy.Request) (*proxy.Response, error) {
+		// we do not need crypto strong rand generator for this
+		time.Sleep(time.Microsecond * time.Duration(rand.Intn(dMax-dMin)+dMin)) // skipcq: GSC-G404
+		return &response, nil
+	}
+	hf := metric.NewHTTPHandlerFactory(veloneticsgin.EndpointHandler)
+	cfg := &config.EndpointConfig{
+		Endpoint: "/test/{var}",
+		Timeout:  10 * time.Second,
+		CacheTTL: time.Second,
+	}
+	engine.GET("/test/:var", hf(cfg, p))
+	statsEngine := metric.NewEngine()
+
+	for i := 0; i < 100; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/test/a", http.NoBody)
+		engine.ServeHTTP(w, req)
+	}
+
+	metric.Router.Aggregate()
+	snapshot := metric.TakeSnapshot()
+
+	expected := map[string]int64{
+		"velonetics.router.response./test/{var}.status.200.count": 100,
+		"velonetics.router.connected":                             0,
+		"velonetics.router.disconnected":                          0,
+		"velonetics.router.connected-total":                       100,
+		"velonetics.router.disconnected-total":                    100,
+		"velonetics.router.response./test/{var}.status":           0,
+	}
+	for k, v := range snapshot.Counters {
+		if exp, ok := expected[k]; !ok || int(exp) != int(v) {
+			t.Errorf("unexpected metric: got [%s: %d] want [%s: %d]", k, v, k, exp)
+		}
+	}
+
+	if _, ok := snapshot.Histograms["velonetics.router.response./test/{var}.size"]; !ok {
+		t.Error("expected histogram not present")
+	}
+
+	expected = map[string]int64{
+		"velonetics.router.connected-gauge":    100,
+		"velonetics.router.disconnected-gauge": 100,
+	}
+	for k, exp := range expected {
+		if v, ok := snapshot.Gauges[k]; !ok || int(exp) != int(v) {
+			t.Errorf("unexpected metric: got [%s: %d] want [%s: %d]", k, v, k, exp)
+		}
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/__stats", http.NoBody)
+	statsEngine.ServeHTTP(w, req)
+
+	if w.Result().StatusCode != 200 {
+		t.Errorf("unexpected status code: %d\n", w.Result().StatusCode)
+	}
+}
+
+func TestStatsEndpoint(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	buf := bytes.NewBuffer(make([]byte, 1024))
+	l, _ := logging.NewLogger("DEBUG", buf, "")
+	cfg := map[string]interface{}{metrics.Namespace: map[string]interface{}{"collection_time": "100ms", "listen_address": ":8990"}}
+	_ = New(ctx, cfg, l)
+	<-time.After(500 * time.Millisecond)
+	resp, err := http.Get("http://localhost:8990/__stats")
+	if err != nil {
+		t.Errorf("Problem with the stats endpoint: %s\n", err.Error())
+		return
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Errorf("Cannot read body: %s\n", err.Error())
+		return
+	}
+	_ = resp.Body.Close()
+	var stats map[string]interface{}
+	err = json.Unmarshal(body, &stats)
+	if err != nil {
+		t.Errorf("Proble unmarshaling stats endpoint response: %s\n", err.Error())
+		return
+	}
+	if _, ok := stats["cmdline"]; !ok {
+		t.Error("Key cmdline should exists in the response.\n")
+		return
+	}
+}
