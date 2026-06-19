@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/proxy"
-	"github.com/velonetics/lura/v2/transport/http/client"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/proxy"
+	"github.com/pucora/lura/v2/transport/http/client"
 	"github.com/rcrowley/go-metrics"
 )
 

@@ -1,6 +1,6 @@
-// Package metrics defines a set of basic building blocks for instrumenting Velonetics gateways
+// Package metrics defines a set of basic building blocks for instrumenting Pucora gateways
 //
-// Check the "github.com/velonetics/velonetics-metrics/gin" and "github.com/velonetics/velonetics-metrics/mux"
+// Check the "github.com/pucora/velonetics-metrics/gin" and "github.com/pucora/velonetics-metrics/mux"
 // packages for complete implementations
 package metrics
 
@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/logging"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/logging"
 	"github.com/rcrowley/go-metrics"
 )
 
@@ -20,7 +20,7 @@ var defaultListenAddr = ":8090"
 
 // New creates a new metrics producer
 func New(ctx context.Context, e config.ExtraConfig, l logging.Logger) *Metrics {
-	registry := metrics.NewPrefixedRegistry("velonetics.")
+	registry := metrics.NewPrefixedRegistry("pucora.")
 
 	var cfg *Config
 	if tmp, ok := ConfigGetter(e).(*Config); ok {
@@ -50,7 +50,7 @@ func New(ctx context.Context, e config.ExtraConfig, l logging.Logger) *Metrics {
 }
 
 // Namespace is the key to look for extra configuration details
-const Namespace = "github_com/velonetics/velonetics-metrics"
+const Namespace = "github_com/pucora/velonetics-metrics"
 
 // Config holds if a component is active or not
 type Config struct {

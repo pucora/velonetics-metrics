@@ -1,4 +1,4 @@
-// Package mux defines a set of basic building blocks for instrumenting Velonetics gateways built using
+// Package mux defines a set of basic building blocks for instrumenting Pucora gateways built using
 // the mux router
 package mux
 
@@ -11,14 +11,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/logging"
-	"github.com/velonetics/lura/v2/proxy"
-	"github.com/velonetics/lura/v2/router/mux"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/logging"
+	"github.com/pucora/lura/v2/proxy"
+	"github.com/pucora/lura/v2/router/mux"
 	"github.com/rcrowley/go-metrics"
 	"github.com/rcrowley/go-metrics/exp"
 
-	veloneticsmetrics "github.com/velonetics/velonetics-metrics/v2"
+	veloneticsmetrics "github.com/pucora/velonetics-metrics/v2"
 )
 
 // New creates a new metrics producer with support for the mux router

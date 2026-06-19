@@ -1,11 +1,11 @@
-Velonetics metrics
+Pucora metrics
 ====
 
-A set of building blocks for instrumenting [Velonetics](http://velonetics.io) gateways
+A set of building blocks for instrumenting [Pucora](http://pucora.io) gateways
 
 ## Available middlewares
 
-There are the avaliable middlewares to add to the Velonetics pipes.
+There are the avaliable middlewares to add to the Pucora pipes.
 
 1. Backend
 2. Proxy
@@ -13,8 +13,8 @@ There are the avaliable middlewares to add to the Velonetics pipes.
 
 ## Available router flavours
 
-1. [mux](github.com/velonetics/velonetics-metrics/blob/master/mux) Mux based routers and handlers
-2. [gin](github.com/velonetics/velonetics-metrics/blob/master/gin) Gin based routers and handlers
+1. [mux](github.com/pucora/velonetics-metrics/blob/master/mux) Mux based routers and handlers
+2. [gin](github.com/pucora/velonetics-metrics/blob/master/gin) Gin based routers and handlers
 
 Check the examples and the documentation for more details
 
@@ -37,7 +37,7 @@ Or configure the collection time of metrics:
 This configuration will set the _collection time_ to 2 minutes and will disable the proxy metrics collector (backend and router metrics will be enabled since the default for all layers is to be enabled).
 ```
   "extra_config": {
-    "github_com/velonetics/velonetics-metrics": {
+    "github_com/pucora/velonetics-metrics": {
       "collection_time": "2m",
       "proxy_disabled": true,
     }
@@ -47,6 +47,6 @@ This configuration will set the _collection time_ to 2 minutes and will disable 
   or leave the defaults:
   ```
   "extra_config": {
-    github_com/velonetics/velonetics-metrics": {}
+    github_com/pucora/velonetics-metrics": {}
   }
   ```

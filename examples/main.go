@@ -7,16 +7,16 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	koanf "github.com/velonetics/velonetics-koanf"
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/logging"
-	"github.com/velonetics/lura/v2/proxy"
-	veloneticsgin "github.com/velonetics/lura/v2/router/gin"
-	"github.com/velonetics/lura/v2/router/gorilla"
-	"github.com/velonetics/lura/v2/router/mux"
+	koanf "github.com/pucora/velonetics-koanf"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/logging"
+	"github.com/pucora/lura/v2/proxy"
+	veloneticsgin "github.com/pucora/lura/v2/router/gin"
+	"github.com/pucora/lura/v2/router/gorilla"
+	"github.com/pucora/lura/v2/router/mux"
 
-	metricsgin "github.com/velonetics/velonetics-metrics/v2/gin"
-	metricsmux "github.com/velonetics/velonetics-metrics/v2/mux"
+	metricsgin "github.com/pucora/velonetics-metrics/v2/gin"
+	metricsmux "github.com/pucora/velonetics-metrics/v2/mux"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	logLevel := flag.String("l", "ERROR", "Logging level")
 	debug := flag.Bool("d", false, "Enable the debug")
 	useGorilla := flag.Bool("gorilla", false, "Use the gorilla router (gin is used by default)")
-	configFile := flag.String("c", "/etc/velonetics/configuration.json", "Path to the configuration filename")
+	configFile := flag.String("c", "/etc/pucora/configuration.json", "Path to the configuration filename")
 	flag.Parse()
 
 	if *useGorilla {
@@ -42,7 +42,7 @@ func main() {
 
 	ctx := context.Background()
 
-	logger, err := logging.NewLogger(*logLevel, os.Stdout, "[VELONETICS]")
+	logger, err := logging.NewLogger(*logLevel, os.Stdout, "[PUCORA]")
 	if err != nil {
 		log.Fatal("ERROR:", err.Error())
 	}

@@ -1,11 +1,11 @@
-module github.com/velonetics/velonetics-metrics/v2
+module github.com/pucora/velonetics-metrics/v2
 
 go 1.25.3
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/velonetics/velonetics-koanf v1.0.0
-	github.com/velonetics/lura/v2 v2.0.0
+	github.com/pucora/velonetics-koanf v1.0.0
+	github.com/pucora/lura/v2 v2.0.0
 	github.com/rcrowley/go-metrics v0.0.0-20180406234716-d932a24a8ccb
 )
 
@@ -32,7 +32,7 @@ require (
 	github.com/knadh/koanf/providers/env v1.1.0 // indirect
 	github.com/knadh/koanf/providers/file v1.2.0 // indirect
 	github.com/knadh/koanf/v2 v2.3.0 // indirect
-	github.com/velonetics/flatmap v1.0.0 // indirect
+	github.com/pucora/flatmap v1.0.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect

@@ -14,11 +14,11 @@ import (
 	"testing"
 	"time"
 
-	veloneticsmetrics "github.com/velonetics/velonetics-metrics/v2"
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/logging"
-	"github.com/velonetics/lura/v2/proxy"
-	"github.com/velonetics/lura/v2/router/mux"
+	veloneticsmetrics "github.com/pucora/velonetics-metrics/v2"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/logging"
+	"github.com/pucora/lura/v2/proxy"
+	"github.com/pucora/lura/v2/router/mux"
 	metrics "github.com/rcrowley/go-metrics"
 )
 
@@ -75,12 +75,12 @@ func TestNew(t *testing.T) {
 	snapshot := metric.TakeSnapshot()
 
 	expected := map[string]int64{
-		"velonetics.router.response./test/{var}.status.200.count": 100,
-		"velonetics.router.connected":                             0,
-		"velonetics.router.disconnected":                          0,
-		"velonetics.router.connected-total":                       100,
-		"velonetics.router.disconnected-total":                    100,
-		"velonetics.router.response./test/{var}.status":           0,
+		"pucora.router.response./test/{var}.status.200.count": 100,
+		"pucora.router.connected":                             0,
+		"pucora.router.disconnected":                          0,
+		"pucora.router.connected-total":                       100,
+		"pucora.router.disconnected-total":                    100,
+		"pucora.router.response./test/{var}.status":           0,
 	}
 	for k, v := range snapshot.Counters {
 		if exp, ok := expected[k]; !ok || int(exp) != int(v) {
@@ -88,13 +88,13 @@ func TestNew(t *testing.T) {
 		}
 	}
 
-	if _, ok := snapshot.Histograms["velonetics.router.response./test/{var}.size"]; !ok {
+	if _, ok := snapshot.Histograms["pucora.router.response./test/{var}.size"]; !ok {
 		t.Error("expected histogram not present")
 	}
 
 	expected = map[string]int64{
-		"velonetics.router.connected-gauge":    100,
-		"velonetics.router.disconnected-gauge": 100,
+		"pucora.router.connected-gauge":    100,
+		"pucora.router.disconnected-gauge": 100,
 	}
 	for k, exp := range expected {
 		if v, ok := snapshot.Gauges[k]; !ok || int(exp) != int(v) {

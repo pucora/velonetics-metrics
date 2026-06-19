@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	metrics "github.com/velonetics/velonetics-metrics/v2"
-	"github.com/velonetics/lura/v2/config"
-	"github.com/velonetics/lura/v2/encoding"
-	"github.com/velonetics/lura/v2/logging"
-	"github.com/velonetics/lura/v2/proxy"
-	"github.com/velonetics/lura/v2/transport/http/client"
+	metrics "github.com/pucora/velonetics-metrics/v2"
+	"github.com/pucora/lura/v2/config"
+	"github.com/pucora/lura/v2/encoding"
+	"github.com/pucora/lura/v2/logging"
+	"github.com/pucora/lura/v2/proxy"
+	"github.com/pucora/lura/v2/transport/http/client"
 )
 
 var defaultCfg = map[string]interface{}{metrics.Namespace: map[string]interface{}{"collection_time": "100ms"}}
